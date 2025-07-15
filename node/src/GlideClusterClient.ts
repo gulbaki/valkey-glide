@@ -733,19 +733,21 @@ export class GlideClusterClient extends BaseClient {
      * await client.mset([{key: "key1", value: "value1"}, {key: "key2", value: "value2"}, {key: "notMyKey", value: "value3"}, {key: "somethingElse", value: "value4"}]);
      * let cursor = new ClusterScanCursor();
      * const matchedKeys: GlideString[] = [];
+     * let keys: GlideString[] = [];
      * while (!cursor.isFinished()) {
-     *   const [cursor, keys] = await client.scan(cursor, { match: "*key*", count: 10 });
+     *    [cursor, keys] = await client.scan(cursor, { match: "*key*", count: 10 });
      *   matchedKeys.push(...keys);
      * }
-     * console.log(matchedKeys); // ["key1", "key2", "notMyKey"]
+     * console.log(matchedKeys); // ["key1", "key2"]
      *
      * // Iterate over keys of a specific type
      * await client.mset([{key: "key1", value: "value1"}, {key: "key2", value: "value2"}, {key: "key3", value: "value3"}]);
      * await client.sadd("thisIsASet", ["value4"]);
      * let cursor = new ClusterScanCursor();
      * const stringKeys: GlideString[] = [];
+     * let keys: GlideString[];
      * while (!cursor.isFinished()) {
-     *   const [cursor, keys] = await client.scan(cursor, { type: object.STRING });
+     *   [cursor, keys] = await client.scan(cursor, { type: ObjectType.STRING });
      *   stringKeys.push(...keys);
      * }
      * console.log(stringKeys); // ["key1", "key2", "key3"]
@@ -1430,14 +1432,14 @@ export class GlideClusterClient extends BaseClient {
             res.length == 0
                 ? (res as FunctionListResponse) // no libs
                 : ((Array.isArray(res[0])
-                      ? // single node response
-                        ((res as GlideRecord<unknown>[]).map(
-                            convertGlideRecordToRecord,
-                        ) as FunctionListResponse)
-                      : // multi node response
-                        convertGlideRecordToRecord(
-                            res as GlideRecord<unknown>,
-                        )) as ClusterResponse<FunctionListResponse>),
+                    ? // single node response
+                    ((res as GlideRecord<unknown>[]).map(
+                        convertGlideRecordToRecord,
+                    ) as FunctionListResponse)
+                    : // multi node response
+                    convertGlideRecordToRecord(
+                        res as GlideRecord<unknown>,
+                    )) as ClusterResponse<FunctionListResponse>),
         );
     }
 
